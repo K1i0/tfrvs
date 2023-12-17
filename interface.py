@@ -8,7 +8,7 @@ from tkinter import ttk
 
 from functools import partial
 
-def run_condition(entries=[]):
+def lab3_run_condition(entries=[]):
   ready_to_run = True
   for entry in entries:
     if not entry.get():
@@ -16,13 +16,47 @@ def run_condition(entries=[]):
   if ready_to_run:
     run_lab_3()
   else:
-    show_pop()
+    lab3_show_pop()
 
-def show_pop():
+def lab3_show_pop():
   messagebox.showinfo('Внимание!', 'Для запуска программы необходимо указать все аргументы: n, c1, c2, c3, eps!') 
 
 def run_lab_3():
   fc.call_main_loop(int(n_1.get()), int(c1_1.get()), int(c2_1.get()), int(c3_1.get()), float(eps_1.get()))
+
+def lab2_run_condition(entries=[]):
+  ready_to_run = True
+  for entry in entries:
+    if not entry.get():
+      ready_to_run = False
+  if ready_to_run:
+    run_lab_2()
+  else:
+    lab2_show_pop()
+
+def lab2_show_pop():
+  messagebox.showinfo('Внимание!', 'Для запуска программы необходимо указать все аргументы: filePath, tetta, rank!') 
+
+def run_lab_2():
+  if choice.get() == "Распарсить файл логов":
+    print("Start parsing!")
+    fc.call_parse_logs(log_path.get(), int(log_count.get()))
+  else:
+    fc.call_main_loop_lab2()
+
+def toggle_visibility(entries_parser, entries_runner):
+    if choice.get() == "Распарсить файл логов":
+      print("Show Parser Info")
+      for entry in entries_parser:
+          entry.grid()
+      for entry in entries_lab2_runner:
+        entry.grid_remove()
+    else:
+      print("Show Runner Info")
+      for entry in entries_parser:
+        entry.grid_remove()
+      for entry in entries_runner:
+        entry.grid()
 
 textInfo_lab1 = ""
 with open("doc/lab1.txt", "r", encoding="utf-8") as ifile:
@@ -88,46 +122,77 @@ txt_lab3.pack()
 txt_lab3.insert(tk.END, textInfo_lab3)
 
 # ----------------------------------------------------
+# 
+entries_lab2_parser = []
+entries_lab2_parser_conditions = []
 
-entries_lab2 = []
+entries_lab2_runner = []
+entries_lab2_parser_conditions = []
+
+entries_lab3 = []
 
 # Данные для запуска программ лабораторных
+# ------------Лаб2-------------------------------------
+
+action_lbl = ttk.Label(frame1_1, text="Введите действие", width=35)
+action_lbl.grid(column=0, row=0)
+
+choice = StringVar()
+
+parse_rbtn = ttk.Radiobutton(frame1_1, text="Распарсить файл логов", value="Распарсить файл логов", variable=choice, width=35, command=partial(toggle_visibility, entries_lab2_parser, entries_lab2_runner))
+parse_rbtn.grid(column=0, row=1)
+
+run_rbtn = ttk.Radiobutton(frame1_1, text="Запустить алгоритм NF/FFDH", value="Запустить алгоритм NF/FFDH", variable=choice, width=35, command=partial(toggle_visibility, entries_lab2_parser, entries_lab2_runner))
+run_rbtn.grid(column=1, row=1)
+
+# Элементы, заполняемые при парсинге
+log_path_lbl = ttk.Label(frame1_1, text="Введите относительный путь к логам", width=35)
+entries_lab2_parser.append(log_path_lbl)
+log_path = ttk.Entry(frame1_1, width=30)
+entries_lab2_parser.append(log_path)
+entries_lab2_parser_conditions.append(log_path)
+
+log_count_lbl = ttk.Label(frame1_1, text="Введите количество строк для парсинга", width=35)
+entries_lab2_parser.append(log_count_lbl)
+log_count = ttk.Entry(frame1_1, width=30)
+entries_lab2_parser.append(log_count)
+entries_lab2_parser_conditions.append(log_count)
+
+parse_btn = ttk.Button(frame1_1, text="Запуск парсера", command=partial(lab2_run_condition, entries_lab2_parser_conditions))
+entries_lab2_parser.append(parse_btn)
+
+# ------------Лаб3-------------------------------------
 n_1_lbl = ttk.Label(frame1_2, text="Введите количество ЭМ", width=35)
 n_1_lbl.grid(column=0, row=0)
 n_1 = ttk.Entry(frame1_2, width=30)
 n_1.grid(column=1, row=0)
-entries_lab2.append(n_1)
+entries_lab3.append(n_1)
 
 c1_1_lbl = ttk.Label(frame1_2, text="Введите параметр генерации c1", width=35)
 c1_1_lbl.grid(column=0, row=1)
 c1_1 = ttk.Entry(frame1_2, width=30)
 c1_1.grid(column=1, row=1)
-entries_lab2.append(c1_1)
+entries_lab3.append(c1_1)
 
 c2_1_lbl = ttk.Label(frame1_2, text="Введите параметр генерации c2", width=35)
 c2_1_lbl.grid(column=0, row=2)
 c2_1 = ttk.Entry(frame1_2, width=30)
 c2_1.grid(column=1, row=2)
-entries_lab2.append(c2_1)
+entries_lab3.append(c2_1)
 
 c3_1_lbl = ttk.Label(frame1_2, text="Введите параметр генерации c3", justify='left', width=35)
 c3_1_lbl.grid(column=0, row=3)
 c3_1 = ttk.Entry(frame1_2, width=30)
 c3_1.grid(column=1, row=3)
-entries_lab2.append(c3_1)
+entries_lab3.append(c3_1)
 
 eps_1_lbl = ttk.Label(frame1_2, text="Введите допустимую погрешность e", justify='left', width=35)
 eps_1_lbl.grid(column=0, row=4)
 eps_1 = ttk.Entry(frame1_2, width=30)
 eps_1.grid(column=1, row=4)
-entries_lab2.append(eps_1)
+entries_lab3.append(eps_1)
 
-run_btn = ttk.Button(frame1_2, text="Запуск программы", command=partial(run_condition, entries_lab2), width=65)
+run_btn = ttk.Button(frame1_2, text="Запуск программы", command=partial(lab3_run_condition, entries_lab3), width=65)
 run_btn.grid(column=0, row=5, columnspan=2, rowspan=2)
-
-# importFileButton = ttk.Button(text="Set Import File", width=110, command=openFile)
-# importFileButton.pack()
-# exportFileButton = ttk.Button(text="Clear Text Window", width=110, command=clearTextWindow)
-# exportFileButton.pack()
 
 root.mainloop()

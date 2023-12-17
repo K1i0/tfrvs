@@ -12,3 +12,6 @@ crate-type = ["cdylib"]
 
 [dependencies]
 matrix = {version= "0.22.0" } 
+anyhow = "1.0.75"
+regex = "1.10.2"
+libc = "0.2"
