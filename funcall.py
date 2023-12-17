@@ -17,4 +17,4 @@ def call_main_loop(n, c1, c2, c3, e):
     rust_lib.main_loop(n, c1, c2, c3, e)
 
 # Пример вызова функции
-call_main_loop(10, 1, 2, 3, 0.01)
+# call_main_loop(10, 1, 2, 3, 0.01)
