@@ -35,20 +35,26 @@ def lab2_run_condition(entries=[]):
     lab2_show_pop()
 
 def lab2_show_pop():
-  messagebox.showinfo('Внимание!', 'Для запуска программы необходимо указать все аргументы: filePath, tetta, rank!') 
+  if choice.get() == "Распарсить файл логов":
+    messagebox.showinfo('Внимание!', 'Для запуска парсера необходимо указать все аргументы: path_to_log, log_cnt!')
+  else:
+    messagebox.showinfo('Внимание!', 'Для запуска программы необходимо указать все аргументы: filePath, tetta, rank!') 
 
 def run_lab_2():
   if choice.get() == "Распарсить файл логов":
     print("Start parsing!")
     fc.call_parse_logs(log_path.get(), int(log_count.get()))
   else:
-    fc.call_main_loop_lab2()
+    if (choosed_algorithm == "NFDH"):
+      fc.call_main_loop_lab2(data_path.get(), int(tetta.get()), int(maxr.get()), 1)
+    else:
+      fc.call_main_loop_lab2(data_path.get(), int(tetta.get()), int(maxr.get()), 2)
 
 def toggle_visibility(entries_parser, entries_runner):
     if choice.get() == "Распарсить файл логов":
       print("Show Parser Info")
       for entry in entries_parser:
-          entry.grid()
+          entry.grid(pady=2)
       for entry in entries_lab2_runner:
         entry.grid_remove()
     else:
@@ -56,7 +62,7 @@ def toggle_visibility(entries_parser, entries_runner):
       for entry in entries_parser:
         entry.grid_remove()
       for entry in entries_runner:
-        entry.grid()
+        entry.grid(pady=2)
 
 textInfo_lab1 = ""
 with open("doc/lab1.txt", "r", encoding="utf-8") as ifile:
@@ -82,7 +88,7 @@ frame1 = tk.Frame(notebook)
 notebook.add(frame1, text="Запуск")
 
 # Создание вкладки для запуска программ
-inner_notebook_1 = ttk.Notebook(frame1)
+inner_notebook_1 = ttk.Notebook(frame1, width=700)
 inner_notebook_1.pack()
 
 frame1_1 = tk.Frame(inner_notebook_1, width=700, height=600)
@@ -127,39 +133,68 @@ entries_lab2_parser = []
 entries_lab2_parser_conditions = []
 
 entries_lab2_runner = []
-entries_lab2_parser_conditions = []
+entries_lab2_runner_conditions = []
 
 entries_lab3 = []
 
 # Данные для запуска программ лабораторных
 # ------------Лаб2-------------------------------------
 
-action_lbl = ttk.Label(frame1_1, text="Введите действие", width=35)
+action_lbl = ttk.Label(frame1_1, text="Введите действие", width=50)
 action_lbl.grid(column=0, row=0)
 
 choice = StringVar()
 
-parse_rbtn = ttk.Radiobutton(frame1_1, text="Распарсить файл логов", value="Распарсить файл логов", variable=choice, width=35, command=partial(toggle_visibility, entries_lab2_parser, entries_lab2_runner))
+parse_rbtn = ttk.Radiobutton(frame1_1, text="Распарсить файл логов", value="Распарсить файл логов", variable=choice, width=50, command=partial(toggle_visibility, entries_lab2_parser, entries_lab2_runner))
 parse_rbtn.grid(column=0, row=1)
 
-run_rbtn = ttk.Radiobutton(frame1_1, text="Запустить алгоритм NF/FFDH", value="Запустить алгоритм NF/FFDH", variable=choice, width=35, command=partial(toggle_visibility, entries_lab2_parser, entries_lab2_runner))
+run_rbtn = ttk.Radiobutton(frame1_1, text="Запустить алгоритм NF/FFDH", value="Запустить алгоритм NF/FFDH", variable=choice, width=50, command=partial(toggle_visibility, entries_lab2_parser, entries_lab2_runner))
 run_rbtn.grid(column=1, row=1)
 
 # Элементы, заполняемые при парсинге
-log_path_lbl = ttk.Label(frame1_1, text="Введите относительный путь к логам", width=35)
+log_path_lbl = ttk.Label(frame1_1, text="Введите относительный путь к логам", width=50)
 entries_lab2_parser.append(log_path_lbl)
-log_path = ttk.Entry(frame1_1, width=30)
+log_path = ttk.Entry(frame1_1, width=50)
 entries_lab2_parser.append(log_path)
 entries_lab2_parser_conditions.append(log_path)
 
-log_count_lbl = ttk.Label(frame1_1, text="Введите количество строк для парсинга", width=35)
+log_count_lbl = ttk.Label(frame1_1, text="Введите количество строк для парсинга", width=50)
 entries_lab2_parser.append(log_count_lbl)
-log_count = ttk.Entry(frame1_1, width=30)
+log_count = ttk.Entry(frame1_1, width=50)
 entries_lab2_parser.append(log_count)
 entries_lab2_parser_conditions.append(log_count)
 
-parse_btn = ttk.Button(frame1_1, text="Запуск парсера", command=partial(lab2_run_condition, entries_lab2_parser_conditions))
+parse_btn = ttk.Button(frame1_1, text="Запуск парсера", command=partial(lab2_run_condition, entries_lab2_parser_conditions), width=50)
 entries_lab2_parser.append(parse_btn)
+
+# Элементы, заполняемые при запуске алгоритма
+data_path_lbl = ttk.Label(frame1_1, text="Введите относительный путь к данным", width=50)
+entries_lab2_runner.append(data_path_lbl)
+data_path = ttk.Entry(frame1_1, width=50)
+entries_lab2_runner.append(data_path)
+entries_lab2_runner_conditions.append(data_path)
+
+tetta_lbl = ttk.Label(frame1_1, text="Введите максимальное тетта контейнера", width=50)
+entries_lab2_runner.append(tetta_lbl)
+tetta = ttk.Entry(frame1_1, width=50)
+entries_lab2_runner.append(tetta)
+entries_lab2_runner_conditions.append(tetta)
+
+maxr_lbl = ttk.Label(frame1_1, text="Введите максимальный ранг задачи (контейнера)", width=50)
+entries_lab2_runner.append(maxr_lbl)
+maxr = ttk.Entry(frame1_1, width=50)
+entries_lab2_runner.append(maxr)
+entries_lab2_runner_conditions.append(maxr)
+
+choosed_algorithm = ""
+
+algorithms = ["NFDH", "FFDH"]
+algorithms_comb = ttk.Combobox(frame1_1, textvariable=choosed_algorithm,values=algorithms, state="readonly", width=48)
+entries_lab2_runner.append(algorithms_comb)
+entries_lab2_runner_conditions.append(algorithms_comb)
+
+runner_btn = ttk.Button(frame1_1, text="Запуск алгоритма", command=partial(lab2_run_condition, entries_lab2_runner_conditions), width=50)
+entries_lab2_runner.append(runner_btn)
 
 # ------------Лаб3-------------------------------------
 n_1_lbl = ttk.Label(frame1_2, text="Введите количество ЭМ", width=35)

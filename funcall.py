@@ -11,7 +11,7 @@ ffi.cdef("""
 """)
 
 ffi.cdef("""
-    void main_loop_lab2(char *, size_t, size_t);
+    void main_loop_lab2(char *, size_t, size_t, size_t);
 """)
 
 ffi.cdef("""
@@ -22,8 +22,8 @@ ffi.cdef("""
 def call_main_loop(n, c1, c2, c3, e):
     rust_lib.main_loop(n, c1, c2, c3, e)
 
-def call_main_loop_lab2(src, tet, r):
-    rust_lib.main_loop_lab2(src.encode('utf-8'), tet, r)
+def call_main_loop_lab2(src, tet, r, target):
+    rust_lib.main_loop_lab2(src.encode('utf-8'), tet, r, target)
 
 def call_parse_logs(path, max_rank):
     rust_lib.parse_logs(path.encode('utf-8'), max_rank)

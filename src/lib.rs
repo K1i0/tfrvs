@@ -13,7 +13,7 @@ use entries::{miniTasks::Task, rectangle::Rectangle};
 
 // Путь к логам (в формате id;t;r), tetta, max rank
 #[no_mangle]
-pub extern "C" fn main_loop_lab2(source: *const libc::c_char, tet: u64, r: u64) {
+pub extern "C" fn main_loop_lab2(source: *const libc::c_char, tet: u64, r: u64, target: u64) {
     // Путь к файлу
     let path = unsafe {
         std::ffi::CStr::from_ptr(source)
@@ -26,7 +26,7 @@ pub extern "C" fn main_loop_lab2(source: *const libc::c_char, tet: u64, r: u64) 
     let wigth_schedule = r;
 
     // Читаем из файла таски в опред формате id;t;r
-    let vec_tasks = Task::read_tasks_from_file(path.to_string(), wigth_schedule);
+    let vec_tasks = Task::read_tasks_from_file(path, wigth_schedule);
 
     let start = Instant::now();
 
@@ -40,49 +40,91 @@ pub extern "C" fn main_loop_lab2(source: *const libc::c_char, tet: u64, r: u64) 
         vec_rec.append(&mut tmp);
     }
 
-    // Структура для алгоритма FFDH
-    let mut schedule = DH::FFDH::ScheduleFFDH::new(wigth_schedule);
-    // Структура для алгоритма NFDH
-    //let mut schedule = DH::NFDH::ScheduleNFDH::new(wigth_schedule);
-    // Пёхаем контейнеры в стакан
-    schedule.containing_rectangels(vec_rec.clone());
+    if (target == 1) {
+        // Структура для алгоритма NFDH
+        let mut schedule = DH::NFDH::ScheduleNFDH::new(wigth_schedule);
+        // Пёхаем контейнеры в стакан
+        schedule.containing_rectangels(vec_rec.clone());
 
-    // Вектор мини тасок
-    let result_work_vec = schedule.gen_result();
+        // Вектор мини тасок
+        let result_work_vec = schedule.gen_result();
 
-    // Замер времени
-    let duration = start.elapsed();
+        // Замер времени
+        let duration = start.elapsed();
 
-    // вывод T(S)
-    println!("T(S):  {}", schedule.actual_hight);
+        // вывод T(S)
+        println!("T(S):  {}", schedule.actual_hight);
 
-    // расписание
-    // /*
-    println!("schedule : ");
-    for tmp in &result_work_vec {
-        println!(
-            "{} -- {} -- {}",
-            tmp.0,
-            tmp.1,
-            // номер контейнера, номера ЭМ, номера временных попугов
-            tmp.2.iter().map(|u| format!("{u} ")).collect::<String>()
-        )
+        // расписание
+        // /*
+        println!("schedule : ");
+        for tmp in &result_work_vec {
+            println!(
+                "{} -- {} -- {}",
+                tmp.0,
+                tmp.1,
+                // номер контейнера, номера ЭМ, номера временных попугов
+                tmp.2.iter().map(|u| format!("{u} ")).collect::<String>()
+            )
+        }
+        // */
+
+        // формулка (погрешность чего-то там)
+        let mut t_shtrih: f64 = vec_tasks
+            .iter()
+            .map(|t| t.hight as f64 * t.width as f64)
+            .sum();
+
+        t_shtrih /= vec_tasks.len() as f64;
+
+        let e = (schedule.actual_hight as f64 - t_shtrih) / t_shtrih;
+        println!("e:  {e}");
+
+        // финальное время в наносекундах (менять как захотите)
+        println!("Time is: {:?}", duration.as_nanos());
+    } else {
+        // Структура для алгоритма FFDH
+        let mut schedule = DH::FFDH::ScheduleFFDH::new(wigth_schedule);
+        // Пёхаем контейнеры в стакан
+        schedule.containing_rectangels(vec_rec.clone());
+
+        // Вектор мини тасок
+        let result_work_vec = schedule.gen_result();
+
+        // Замер времени
+        let duration = start.elapsed();
+
+        // вывод T(S)
+        println!("T(S):  {}", schedule.actual_hight);
+
+        // расписание
+        // /*
+        println!("schedule : ");
+        for tmp in &result_work_vec {
+            println!(
+                "{} -- {} -- {}",
+                tmp.0,
+                tmp.1,
+                // номер контейнера, номера ЭМ, номера временных попугов
+                tmp.2.iter().map(|u| format!("{u} ")).collect::<String>()
+            )
+        }
+        // */
+
+        // формулка (погрешность чего-то там)
+        let mut t_shtrih: f64 = vec_tasks
+            .iter()
+            .map(|t| t.hight as f64 * t.width as f64)
+            .sum();
+
+        t_shtrih /= vec_tasks.len() as f64;
+
+        let e = (schedule.actual_hight as f64 - t_shtrih) / t_shtrih;
+        println!("e:  {e}");
+
+        // финальное время в наносекундах (менять как захотите)
+        println!("Time is: {:?}", duration.as_nanos());
     }
-    // */
-
-    // формулка (погрешность чего-то там)
-    let mut t_shtrih: f64 = vec_tasks
-        .iter()
-        .map(|t| t.hight as f64 * t.width as f64)
-        .sum();
-
-    t_shtrih /= vec_tasks.len() as f64;
-
-    let e = (schedule.actual_hight as f64 - t_shtrih) / t_shtrih;
-    println!("e:  {e}");
-
-    // финальное время в наносекундах (менять как захотите)
-    println!("Time is: {:?}", duration.as_nanos());
 }
 
 // Исходдный файл с логами для парсинга, кол-во строк для парсинга
